@@ -30,3 +30,20 @@ code {
   background: rgb(60,175,255);
   background: linear-gradient(130deg, rgba(60,175,255,1) 0%, rgba(190,238,255,1) 48%, rgba(60,175,255,1) 100%);
 }
+
+.dashboard-actions{
+  margin: 10px 10px 0 0;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  width: 100px;
+  height: auto;
+  aspect-ratio: 1/1;
+  border: black 1px solid;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.dashboard-actions:hover{
+  background: rgb(163,225,255);
+  background: radial-gradient(circle, rgba(163,225,255,1) 0%, rgba(190,238,255,1) 48%, rgba(163,225,255,1) 100%);
+}

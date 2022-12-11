@@ -6,6 +6,9 @@ import {useEffect} from "react";
 import blankBlk from "../img/blank-blk.png";
 import visaLogo from "../img/visa-logo.png";
 import VirtualCard from "../components/virtual-card";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faPaperPlane} from "@fortawesome/free-regular-svg-icons";
+import {faMoneyBills, faMoneyBillTransfer, faPlus} from "@fortawesome/free-solid-svg-icons";
 const Dashboard = (props) => {
 
     useEffect(() => {
@@ -19,12 +22,39 @@ const Dashboard = (props) => {
                 <UserCard/>
               </Col>
               <Col>
-                  <Col md={4}>
-                    <VirtualCard/>
-                  </Col>
-                  <Col>
-
-                  </Col>
+                  <Row>
+                      <Col md={4}>
+                          <VirtualCard/>
+                      </Col>
+                      <Col>
+                          <Card>
+                              <Card.Body>
+                                  <Card>
+                                      <Card.Body>
+                                          <div className="text-center">
+                                              <h3>Php 1200.54</h3>
+                                              <small>Available Balance</small>
+                                          </div>
+                                      </Card.Body>
+                                  </Card>
+                                  <div className="d-flex justify-content-center">
+                                      <div className="dashboard-actions text-center">
+                                          <h2><FontAwesomeIcon icon={faPlus}/></h2>
+                                          <small>Cash In</small>
+                                      </div>
+                                      <div className="dashboard-actions text-center">
+                                          <h2><FontAwesomeIcon icon={faMoneyBills}/></h2>
+                                          <small>Cash Out</small>
+                                      </div>
+                                      <div className="dashboard-actions text-center">
+                                          <h2><FontAwesomeIcon icon={faMoneyBillTransfer}/></h2>
+                                          <small>Send</small>
+                                      </div>
+                                  </div>
+                              </Card.Body>
+                          </Card>
+                      </Col>
+                  </Row>
               </Col>
           </Row>
       </Row>
