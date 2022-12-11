@@ -1,0 +1,32 @@
+@font-face {
+  font-family: "Gotham";
+  src: url("./fonts/Gotham-Font/Gotham-Light.otf")
+}
+body {
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.formGroup{
+  margin-bottom: 10px;
+}
+.formButtonAdj{
+  margin-right: 10px;
+}
+
+.virtual-card{
+  padding: 10px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16/10;
+  border-radius: 10px;
+  background: rgb(60,175,255);
+  background: linear-gradient(130deg, rgba(60,175,255,1) 0%, rgba(190,238,255,1) 48%, rgba(60,175,255,1) 100%);
+}
