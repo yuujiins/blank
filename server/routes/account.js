@@ -29,7 +29,7 @@ accountRoutes.route("/account/:id").post(auth,(req, res) => {
     let account = {
         userId: ObjectId(req.params.id),
         cardNumber: generator.GenCC("VISA"),
-        CCV: Math.floor(Math.random()*(999-100+1)+100),
+        CVV: Math.floor(Math.random()*(999-100+1)+100),
         funds: 0.00
     };
     db_connect
@@ -55,6 +55,7 @@ accountRoutes.route("/account/:id").put(auth,(req, res) => {
         .collection("accounts")
         .updateOne(account, query, (err, result) => {
             if(err) throw err;
+            result.status = 1;
             res.json(result);
         })
 })

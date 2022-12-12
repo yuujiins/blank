@@ -6,7 +6,7 @@ const UserCard = (props) => {
     return (
         <Card className="text-start">
             <Card.Header>
-                <h5>Hello, User!</h5>
+                <h5>Hello!</h5>
             </Card.Header>
             <Card.Body>
                 <div className="text-center">
@@ -17,11 +17,10 @@ const UserCard = (props) => {
                             style={{width: "100px", height: "auto"}}
                         />
                         <Figure.Caption>
-                            <h5>User</h5>
-                            <small>Joined December 2022</small>
+                            <h5>{`${window.sessionStorage.getItem('firstName')} ${window.sessionStorage.getItem('lastName')}`}</h5>
                             <Row>
                                 <Col>
-                                    <Link to="/">View Profile</Link>
+                                    <Link to="/profile">View Profile</Link>
                                 </Col>
                             </Row>
                         </Figure.Caption>

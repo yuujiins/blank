@@ -11,14 +11,14 @@ const VirtualCard = (props) => {
                         <img src={blankBlk} style={{width: "45px", height: "auto"}}/>
                     </div>
                     <div className="card-center d-flex justify-content-end flex-column" style={{height: "60%"}}>
-                        <h5 className="align-self-start" style={{height: "50%"}}>4895 0404 8534 7773</h5>
+                        <h5 className="align-self-start" style={{height: "50%"}}>{`${window.sessionStorage.getItem('cardNumber').toString().replace(/\d{4}(?=.)/g, '$& ')}`}</h5>
                         <div className="align-self-start d-flex" style={{height: "10%"}}>
                             <div className="d-flex flex-column">
-                                <small>JUAN DELA CRUZ</small>
+                                <small>{`${window.sessionStorage.getItem('firstName').toUpperCase()} ${window.sessionStorage.getItem('lastName').toUpperCase()}`}</small>
                                 <small>Valid thru: 09/29</small>
                             </div>
                             <div className="" style={{paddingLeft: "30px"}}>
-                                <small>CVV: 394</small>
+                                <small>CVV: {window.sessionStorage.getItem('cvv')}</small>
                             </div>
                         </div>
                     </div>

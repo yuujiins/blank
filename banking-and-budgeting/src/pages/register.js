@@ -2,14 +2,17 @@ import {useEffect, useState} from "react";
 import LandingText from "../components/landing-text";
 import {Button, Card, Col, Form, Row} from "react-bootstrap";
 import {Link} from "react-router-dom";
+import VerifyOtpModal from "../components/verify-otp-modal";
 
 const Register = (props) => {
     const [isLogged, setLogged] = useState(false)
+    const [otpSent, setOtpSent] = useState(false)
     useEffect(() => {
         document.title = "Blank - Register"
     })
     return(
         <Row style={{padding: "50px", margin: 0}}>
+            <VerifyOtpModal show={otpSent}/>
             <LandingText/>
             <Col md={6} className="text-start">
                 <Card>

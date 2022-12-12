@@ -38,6 +38,31 @@ userRoutes.route("/users/:id").get(auth,(req, res) => {
        });
 });
 
+userRoutes.route('/users/email').post((req, res) => {
+    let db_connect = dbo.getDb();
+    let query = {
+        email: req.body.email
+    }
+    console.log(req.body)
+    db_connect
+        .collection('users')
+        .findOne(query, (err, result) => {
+            if(err) throw err;
+            if(result !== null){
+                result.status = 1;
+                db_connect
+                    .collection('accounts')
+                    .findOne({userId: result._id}, (err, rr) => {
+                        result.userAccount = rr;
+                        res.json(result)
+                    })
+            }
+            else{
+                res.json(result)
+            }
+        })
+})
+
 userRoutes.route("/login").post( (req, res) => {
 
     let db_connect = dbo.getDb();
@@ -88,6 +113,90 @@ userRoutes.route("/login").post( (req, res) => {
 
 
 });
+
+userRoutes.route('/verify').post((req, rr) => {
+    let db_connect = dbo.getDb();
+    let data = {
+        userId: ObjectId(req.body.userId),
+        otp: parseInt(req.body.otp)
+    }
+    db_connect
+        .collection('verifyOTP')
+        .findOne(data, (err, result) => {
+            if(err) throw err;
+            console.log(result)
+            if(result == null){
+                rr.json({
+                    status: -1,
+                    message: 'Incorrect OTP'
+                })
+            }
+            else{
+                db_connect
+                    .collection('verifyOTP')
+                    .deleteOne(data, (err, res) => {
+                        if(err) throw err
+                        if(res){
+                            db_connect
+                                .collection('users')
+                                .updateOne({_id: ObjectId(req.body.userId)},{
+                                    $set: {
+                                        isMobileVerified: true,
+                                        isActive: true
+                                    }
+                                }, (err, res) => {
+                                    if(err) throw err
+                                    if(res){
+                                        rr.json({
+                                            status: 1,
+                                            message: 'Account verified successfully'
+                                        })
+                                    }
+                                })
+
+                        }
+                    })
+            }
+        })
+
+})
+
+userRoutes.route('/checkOTP').post((req, res) => {
+    let db_connect = dbo.getDb();
+    let data = {
+        userId: ObjectId(req.body.userId)
+    }
+    db_connect
+        .collection('verifyOTP')
+        .find(data)
+        .toArray((err, result) => {
+            if(err) throw err;
+            if(result.length < 1){
+                //Send new OTP
+                const otp = Math.floor(Math.random()*(999999-100000+1)+100000)
+                db_connect
+                    .collection('verifyOTP')
+                    .insertOne({
+                        userId: ObjectId(req.body.userId),
+                        otp: otp
+                    }, (err, result) => {
+                        if(err) throw err;
+                        res.json({
+                            status: 2,
+                            otp: otp
+                        })
+                    })
+            }
+            else{
+                //Verify existing OTP
+                res.json({
+                    status: 1,
+                    otp: result[0].otp
+                })
+            }
+        })
+})
+
 userRoutes.route("/users").post((req, res)=>{
     let db_connect = dbo.getDb();
     bcrypt.hash(req.body.password, 10, (err, hash) => {
@@ -98,6 +207,11 @@ userRoutes.route("/users").post((req, res)=>{
             middleName: req.body.middleName,
             email: req.body.email,
             address: req.body.address,
+            mobileNumber: req.body.mobileNumber,
+            birthDay: req.body.birthDay,
+            isMobileVerified: false,
+            isActive: false,
+            isLocked: false,
             password: hash
         }
         db_connect
@@ -109,13 +223,24 @@ userRoutes.route("/users").post((req, res)=>{
                 }, process.env.TOKEN_KEY, {
                     expiresIn: "3h"
                 })
-                const data = {
-                    status: 1,
-                    insertedId: result.insertedId,
-                    user: user,
-                    token: token
+                if(result.insertedId !== null){
+                    const otp = Math.floor(Math.random()*(999999-100000+1)+100000)
+                    db_connect
+                        .collection("verifyOTP")
+                        .insertOne({
+                            userId: result.insertedId,
+                            otp: otp
+                        }, (err, result) => {
+                            const data = {
+                                status: 1,
+                                insertedId: result.insertedId,
+                                user: user,
+                                token: token,
+                                otp: otp
+                            }
+                            res.json(data);
+                        })
                 }
-                res.json(data);
             })
     });
 
