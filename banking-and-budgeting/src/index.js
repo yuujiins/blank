@@ -10,7 +10,8 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 import { confirmAlert } from 'react-confirm-alert';
 import "primereact/resources/themes/lara-light-indigo/theme.css";  //theme
 import "primereact/resources/primereact.min.css";                  //core css
-import "primeicons/primeicons.css";                                //icons
+import "primeicons/primeicons.css";
+import {BrowserRouter} from "react-router-dom";                                //icons
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -29,7 +30,10 @@ root.render(
           pauseOnHover
           theme="light"
       />
-    <App />
+      <BrowserRouter>
+          <App />
+      </BrowserRouter>
+
   </React.StrictMode>
 );
 

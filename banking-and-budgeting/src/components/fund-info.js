@@ -15,7 +15,7 @@ const FundInfo = (props) => {
                 <Card>
                     <Card.Body>
                         <div className="text-center">
-                            <h3>{parseFloat(props.currentBalance)}</h3>
+                            <h3>Php {(Math.round(parseFloat(props.currentBalance) * 100) / 100).toFixed(2)}</h3>
                             <small>Available Balance</small><br/>
                             <Button type="button" variant="link" onClick={props.reloadBalance}><FontAwesomeIcon icon={faRotate}/> Refresh</Button>
                         </div>

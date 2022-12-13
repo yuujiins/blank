@@ -15,6 +15,7 @@ import {toast} from "react-toastify";
 import Landing from "./pages/landing";
 
 function App() {
+    const navigate = useNavigate();
     const [isLogged, setLogged] = useState(false)
     const [tableView, setTableView] = useState('transactions')
     const [buttonView, setButtonView] = useState(true)
@@ -122,7 +123,9 @@ function App() {
                     progress: undefined,
                     theme: 'light'
                 })
-                window.location.href='/dashboard';
+                navigate('/dashboard', {
+                    replace: false
+                })
             }
         }
     }
@@ -199,7 +202,6 @@ function App() {
     })
   return (
     <div className="App" style={{fontFamily: "Gotham"}}>
-      <BrowserRouter>
           <VerifyOtpModal show={otpSent} onHide={otpModalHide} userId={userId} onVerifyOTP={verifyOTPForm}/>
           <Header isLogged={isLogged} buttonView={buttonView} toggleTableView={toggleTableView} tableView={tableView}/>
           <Footer/>
@@ -210,7 +212,6 @@ function App() {
             <Route path="/dashboard" element={<Dashboard tableView={tableView} toggleTableView={toggleTableView}/>}/>
             <Route path="/profile" element={<Profile/>}/>
         </Routes>
-      </BrowserRouter>
         <Container>
             <Row>
                 <Outlet/>

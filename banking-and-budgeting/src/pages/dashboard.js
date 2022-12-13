@@ -113,6 +113,8 @@ const Dashboard = (props) => {
             .then(data => {
                 data.forEach((d) => {
                     d.date = new Date(d.date).toLocaleDateString()
+                    d.amount = (Math.round(d.amount * 100) / 100).toFixed(2)
+                    d.runningBalance = (Math.round(d.runningBalance * 100) / 100).toFixed(2)
                 })
                 setDtData(data)
             });
@@ -125,6 +127,8 @@ const Dashboard = (props) => {
             .then(data => {
                 data.forEach((d) => {
                     d.date = new Date(d.date).toLocaleDateString()
+                    d.amount = (Math.round(d.amount * 100) / 100).toFixed(2)
+                    d.runningBalance = (Math.round(d.runningBalance * 100) / 100).toFixed(2)
                 })
                 setDtData(data)
             })
@@ -145,6 +149,8 @@ const Dashboard = (props) => {
         getAccountInfo()
             .then(response => response.json())
             .then(data => {
+                data.funds = (Math.round(data.funds * 100) / 100).toFixed(2)
+                console.log((Math.round(data.funds * 100) / 100).toFixed(2).toString())
                 setCurrentBalance(data.funds)
                 window.sessionStorage.setItem('funds', data.funds.toString())
             })

@@ -19,7 +19,33 @@ export const sendUpdateOTP = async (data) => {
     const r = await ajaxResult.json()
     if(r.status === 1){
         console.log('Sending OTP')
-        const message = `This is from Blank. Your OTP is ${data.otp}. Use this to change your number.`
+        const message = `This is from Blank. Your OTP is ${data.otp}. Use this to change your account details.`
+        const m = await fetch(`http://gateway.onewaysms.ph:10001/api.aspx?apiusername=APIEOB6R6R8MO&apipassword=APIEOB6R6R8MOKATYZ&senderid=INFO&mobileno=${data.mobileNumber}&message=${message}`, {
+            method: 'GET',
+            mode: "no-cors"
+        })
+
+        return JSON.stringify({
+            status: 1,
+            message: 'Please check your mobile inbox for your OTP'
+        })
+
+    }
+}
+
+export const sendForgotOTP = async (data) => {
+    const ajaxResult = await fetch(server + 'passwordOTP', {
+        method: 'POST',
+        headers: {
+            'Accept' : 'application/json',
+            'Content-Type' : 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    const r = await ajaxResult.json()
+    if(r.status === 1){
+        console.log('Sending OTP')
+        const message = `This is from Blank. Your OTP is ${data.otp}. Use this to change your account details.`
         const m = await fetch(`http://gateway.onewaysms.ph:10001/api.aspx?apiusername=APIEOB6R6R8MO&apipassword=APIEOB6R6R8MOKATYZ&senderid=INFO&mobileno=${data.mobileNumber}&message=${message}`, {
             method: 'GET',
             mode: "no-cors"
@@ -40,6 +66,15 @@ export const getAccountInfo = async () => {
             'Content-Type' : 'application/json',
             'x-access-token' : window.sessionStorage.getItem('token')
         }
+    })
+    return ajaxResult;
+}
+
+export const getMobileNumber = async (data) => {
+    const ajaxResult = await fetch(server + 'getMobileNumber', {
+        method: 'POST',
+        headers: postHeader,
+        body: JSON.stringify(data)
     })
     return ajaxResult;
 }
@@ -179,6 +214,15 @@ export const verifyOTP = async (data) => {
     })
     const r = await ajaxResult.json()
     return r;
+}
+
+export const resetPassword = async (data) => {
+    const ajaxResult = await fetch(server + 'resetPassword', {
+        method: 'POST',
+        headers: postHeader,
+        body: JSON.stringify(data)
+    })
+    return ajaxResult;
 }
 
 export const checkOTP = async (data) => {

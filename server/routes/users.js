@@ -131,6 +131,23 @@ userRoutes.route('/otp').post(auth, (req, res) => {
         })
 })
 
+userRoutes.route('/passwordOTP').post((req, res) => {
+    let db_connect = dbo.getDb();
+    let data = {
+        userId: ObjectId(req.body.userId),
+        otp: parseInt(req.body.otp)
+    }
+    db_connect
+        .collection('verifyOTP')
+        .insertOne(data, (err, r) => {
+            if(err) throw err;
+            if(r !== null){
+                r.status = 1;
+                res.json(r)
+            }
+        })
+})
+
 userRoutes.route('/verify').post((req, rr) => {
     let db_connect = dbo.getDb();
     let data = {
@@ -262,6 +279,57 @@ userRoutes.route("/users").post((req, res)=>{
     });
 
 });
+
+userRoutes.route('/resetPassword').post((req, res) => {
+    let db_connect = dbo.getDb();
+    let user = {
+        _id: ObjectId(req.body.userId)
+    }
+
+    bcrypt.hash(req.body.password, 10, (error, hash) => {
+        if(error) throw (error)
+        let updatedPassword = {
+            $set: {
+                password: hash
+            }
+        }
+        db_connect
+            .collection('users')
+            .updateOne(user, updatedPassword, (err, result) => {
+                if(err) throw err;
+                result.status =1;
+                result.message = 'Password reset successfully!'
+                res.json(result)
+            })
+    })
+})
+
+userRoutes.route('/getMobileNumber').post((req, res) => {
+    let db_connect = dbo.getDb();
+    let user = {
+        email: req.body.email
+    }
+    db_connect
+        .collection('users')
+        .findOne(user, (err, result) => {
+            if(err) throw err;
+            if(result === null){
+                res.json({
+                    status: -1,
+                    message: 'User not found'
+                })
+
+            }
+            else{
+                let data = {
+                    status: 1,
+                    userId: result._id,
+                    mobileNumber: result.mobileNumber
+                }
+                res.json(data);
+            }
+        })
+})
 
 userRoutes.route('/users/:id/passwordUpdate').post(auth, (req, res) => {
     let db_connect = dbo.getDb();

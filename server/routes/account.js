@@ -48,7 +48,7 @@ accountRoutes.route("/account/:id").put(auth,(req, res) => {
     };
     let query = {
         $set: {
-            funds: req.body.funds
+            funds: parseFloat((Math.round(req.body.funds * 100) / 100).toFixed(2))
         }
     };
     db_connect
