@@ -12,20 +12,6 @@ transactionsRoute.route("/account/:id/transactions").get(auth, (req, res) => {
     let db_connect = dbo.getDb();
     let query = {
         userId: ObjectId(req.params.id),
-        $or: [
-            {
-                type: "deposit"
-            },
-            {
-                type: "withdrawal"
-            },
-            {
-                type: 'receive'
-            },
-            {
-                type: 'transfer'
-            }
-        ]
     }
     db_connect
         .collection("transactions")
@@ -41,20 +27,6 @@ transactionsRoute.route('/account/:id/transactions/filter').post(auth, (req, res
     let db_connect = dbo.getDb();
     let query = {
         userId: ObjectId(req.params.id),
-        $or: [
-            {
-                type: "deposit"
-            },
-            {
-                type: "withdrawal"
-            },
-            {
-                type: 'receive'
-            },
-            {
-                type: 'transfer'
-            }
-        ],
         date: {
             $gte: new Date(req.body.dateFrom),
             $lt: new Date(req.body.dateTo)
@@ -77,10 +49,11 @@ transactionsRoute.route("/account/:id/transactions").post(auth, (req, res) => {
         type: req.body.type,
         description: (req.body.type === "deposit" ? "Deposit to account"
                 : req.body.type === 'transfer' ? 'Transferred money to ' + req.body.recipientEmail
-                : req.body.type === 'receive' ? 'Received money from ' + req.body.senderEmail : 'Withdrawn from account'),
+                : req.body.type === 'receive' ? 'Received money from ' + req.body.senderEmail
+                : req.body.type === 'expense' ? req.body.description : 'Withdrawn from account'),
         date: new Date(req.body.date),
         time: req.body.time,
-        amount: (req.body.type === "deposit" ? req.body.amount: req.body.amount * -1),
+        amount: (req.body.type === "withdraw" || req.body.type === "transfer" ? req.body.amount * -1: req.body.amount * 1),
         runningBalance: req.body.runningBalance
     }
     db_connect

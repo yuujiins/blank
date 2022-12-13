@@ -9,7 +9,7 @@ const SendForm = (props) => {
             </Form.Group>
             <Form.Group className="formGroup">
                 <Form.Label htmlFor="sendAmount">Amount</Form.Label>
-                <Form.Control type="number" step="0.1" id="sendAmount" name="sendAmount" min="0.00" placeholder="Enter amount" required/>
+                <Form.Control type="number" step="0.01" id="sendAmount" name="sendAmount" min="0.00" placeholder="Enter amount" required/>
             </Form.Group>
         </Form>
     );

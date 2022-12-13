@@ -114,6 +114,23 @@ userRoutes.route("/login").post( (req, res) => {
 
 });
 
+userRoutes.route('/otp').post(auth, (req, res) => {
+    let db_connect = dbo.getDb();
+    let data = {
+        userId: ObjectId(req.body.userId),
+        otp: parseInt(req.body.otp)
+    }
+    db_connect
+        .collection('verifyOTP')
+        .insertOne(data, (err, result) => {
+            if (err) throw err
+            if(result !== null){
+                result.status =1;
+                res.json(result)
+            }
+        })
+})
+
 userRoutes.route('/verify').post((req, rr) => {
     let db_connect = dbo.getDb();
     let data = {
@@ -246,6 +263,51 @@ userRoutes.route("/users").post((req, res)=>{
 
 });
 
+userRoutes.route('/users/:id/passwordUpdate').post(auth, (req, res) => {
+    let db_connect = dbo.getDb();
+    let user = {_id: ObjectId(req.params.id)};
+    db_connect
+        .collection('users')
+        .findOne(user, (err, result) => {
+            if(err) throw err
+            if(result){
+                bcrypt.compare(req.body.oldPassword, result.password, (err, r) => {
+                    if (err) throw err;
+                    if (!r) {
+                        let data = {
+                            status: -1,
+                            message: 'Invalid password'
+                        }
+                        res.json(data)
+                    } else {
+                        bcrypt.hash(req.body.newPassword, 10, (err, hash) => {
+                            if(err) throw err
+                            let updatedPassword = {
+                                $set: {
+                                    password: hash
+                                }
+                            }
+                            db_connect
+                                .collection('users')
+                                .updateOne(user, updatedPassword, (error, updateResult) => {
+                                    if(error) throw error
+                                    updateResult.status = 1;
+                                    res.json(updateResult)
+                                })
+                        })
+                    }
+                })
+            }
+            else{
+                let data = {
+                    status: -1,
+                    message: 'Invalid password'
+                }
+                res.json(data)
+            }
+        })
+})
+
 userRoutes.route("/users/:id").put(auth,(req, res)=>{
     let db_connect = dbo.getDb();
     let user = {_id: ObjectId(req.params.id)};
@@ -254,6 +316,7 @@ userRoutes.route("/users/:id").put(auth,(req, res)=>{
             lastName: req.body.lastName,
             firstName: req.body.firstName,
             middleName: req.body.middleName,
+            mobileNumber : req.body.mobileNumber,
             address: req.body.address
         }
     }
@@ -262,6 +325,7 @@ userRoutes.route("/users/:id").put(auth,(req, res)=>{
         .updateOne(user, newValues, (err, result) => {
             if (err) throw err;
             console.log("1 user updated!")
+            result.status = 1;
             res.json(result);
         })
 });

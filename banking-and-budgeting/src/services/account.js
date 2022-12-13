@@ -6,6 +6,94 @@ const postHeader = {
     'Content-Type': 'application/json'
 }
 
+export const sendUpdateOTP = async (data) => {
+    const ajaxResult = await fetch(server + 'otp', {
+        method: 'POST',
+        headers: {
+            'Accept' : 'application/json',
+            'Content-Type' : 'application/json',
+            'x-access-token' : window.sessionStorage.getItem('token')
+        },
+        body: JSON.stringify(data)
+    })
+    const r = await ajaxResult.json()
+    if(r.status === 1){
+        console.log('Sending OTP')
+        const message = `This is from Blank. Your OTP is ${data.otp}. Use this to change your number.`
+        const m = await fetch(`http://gateway.onewaysms.ph:10001/api.aspx?apiusername=APIEOB6R6R8MO&apipassword=APIEOB6R6R8MOKATYZ&senderid=INFO&mobileno=${data.mobileNumber}&message=${message}`, {
+            method: 'GET',
+            mode: "no-cors"
+        })
+
+        return JSON.stringify({
+            status: 1,
+            message: 'Please check your mobile inbox for your OTP'
+        })
+
+    }
+}
+
+export const getAccountInfo = async () => {
+    const ajaxResult = await fetch(server + `account/${window.sessionStorage.getItem('userId')}`, {
+        headers: {
+            'Accept' : 'application/json',
+            'Content-Type' : 'application/json',
+            'x-access-token' : window.sessionStorage.getItem('token')
+        }
+    })
+    return ajaxResult;
+}
+
+export const updatePassword = async (data) => {
+    const ajaxResult = await fetch(server + `users/${window.sessionStorage.getItem('userId')}/passwordUpdate`, {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json',
+            'Accept' : 'application/json',
+            'x-access-token' : window.sessionStorage.getItem('token')
+        },
+        body: JSON.stringify(data)
+    })
+    const r = await  ajaxResult.json()
+    if(r.status === 1){
+        return JSON.stringify({
+            status: 1,
+            message: 'Password successfully changed!'
+        })
+    }
+    else{
+        return JSON.stringify({
+            status: -1,
+            message: r.message
+        })
+    }
+}
+
+export const updateProfile = async (data) => {
+    const ajaxResult = await fetch(server + `users/${window.sessionStorage.getItem('userId')}`,{
+        method: 'PUT',
+        headers: {
+            'Accept' : 'application/json',
+            'Content-Type' : 'application/json',
+            'x-access-token' : window.sessionStorage.getItem('token')
+        },
+        body: JSON.stringify(data)
+    })
+    const r = await ajaxResult.json()
+    if(r.status === 1){
+        return {
+            status: 1,
+            message: 'Profile successfully updated!'
+        }
+    }
+    else{
+        return {
+            status: -1,
+            message: 'Failed to update profile'
+        }
+    }
+}
+
 export const register = async (data) => {
     const existingUser = await fetch(server + 'users/email', {
         method: 'POST',
@@ -208,6 +296,16 @@ export const send = async (data) => {
                     })
                 })
                 const trar = await trAjax.json()
+                const rmessage = `You have received Php ${parseFloat(data.amount)} from ${window.sessionStorage.getItem('email')}. Your new balance is now Php ${parseFloat(rar.userAccount.funds) + parseFloat(data.amount)}`
+                const smessage = `You have sent Php ${parseFloat(data.amount)} to ${rar.email}. Your new balance is now Php ${parseFloat(window.sessionStorage.getItem('funds')) - parseFloat(data.amount)}`
+                const m = await fetch(`http://gateway.onewaysms.ph:10001/api.aspx?apiusername=APIEOB6R6R8MO&apipassword=APIEOB6R6R8MOKATYZ&senderid=INFO&mobileno=${rar.mobileNumber}&message=${rmessage}`,{
+                    method: 'GET',
+                    mode: "no-cors"
+                })
+                const n = await fetch(`http://gateway.onewaysms.ph:10001/api.aspx?apiusername=APIEOB6R6R8MO&apipassword=APIEOB6R6R8MOKATYZ&senderid=INFO&mobileno=${window.sessionStorage.getItem('mobileNumber')}&message=${smessage}`,{
+                    method: 'GET',
+                    mode: "no-cors"
+                })
             }
             window.sessionStorage.setItem('funds', (parseFloat(window.sessionStorage.getItem('funds')) - parseFloat(data.amount)).toString())
             return {
@@ -262,6 +360,30 @@ export const deposit = async (data) => {
     return r;
 }
 
+export const getExpenses = async () => {
+    const ajaxResult = await fetch(server + `account/${window.sessionStorage.getItem('userId')}/expenses`, {
+        headers: {
+            'Content-Type' : 'application/json',
+            'Accept' : 'application/json',
+            'x-access-token' : window.sessionStorage.getItem('token')
+        }
+    })
+    return ajaxResult;
+}
+
+export const getExpensesFiltered = async (data) => {
+    const ajaxResult = await fetch(server + `account/${window.sessionStorage.getItem('userId')}/expenses/filter`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept' : 'application/json',
+            'x-access-token' : window.sessionStorage.getItem('token')
+        },
+        body: JSON.stringify(data)
+    })
+    return ajaxResult;
+}
+
 export const getTransactions = async () => {
     const ajaxResult = await fetch(server + `account/${window.sessionStorage.getItem('userId')}/transactions`, {
         headers: {
@@ -274,7 +396,7 @@ export const getTransactions = async () => {
 }
 
 export const getTransactionsFiltered = async (data) => {
-    const ajaxResult = await fetch(server + `account/${window.sessionStorage.getItem('userId')}/transactions`, {
+    const ajaxResult = await fetch(server + `account/${window.sessionStorage.getItem('userId')}/transactions/filter`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -284,4 +406,65 @@ export const getTransactionsFiltered = async (data) => {
         body: JSON.stringify(data)
     })
     return ajaxResult;
+}
+
+export const addExpense = async (data) => {
+    const ajaxResult = await fetch(server + `account/${window.sessionStorage.getItem('userId')}/expenses`, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type' : 'application/json',
+            'x-access-token' : window.sessionStorage.getItem('token')
+        },
+        body: JSON.stringify(data)
+    })
+    const r = await ajaxResult.json()
+    if(r.status === 1){
+        const ajaxResult = await fetch(server + `account/${window.sessionStorage.getItem('userId')}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept' : 'application/json',
+                'x-access-token' : window.sessionStorage.getItem('token')
+            },
+            body: JSON.stringify({
+                funds: parseFloat(window.sessionStorage.getItem('funds')) - parseFloat(data.amount)
+            })
+        })
+        const r = await ajaxResult.json()
+        if(r !== null){
+            const trAjax = await fetch(server + `account/${window.sessionStorage.getItem('userId')}/transactions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept' : 'application/json',
+                    'x-access-token' : window.sessionStorage.getItem('token')
+                },
+                body: JSON.stringify({
+                    userId: window.sessionStorage.getItem('userId'),
+                    type: 'expense',
+                    date: data.date,
+                    description: data.description,
+                    amount: data.amount,
+                    runningBalance: parseFloat(window.sessionStorage.getItem('funds')) - parseFloat(data.amount)
+                })
+            })
+            const tar = await trAjax.json()
+            if(tar !== null){
+                window.sessionStorage.setItem('funds', (parseFloat(window.sessionStorage.getItem('funds')) - parseFloat(data.amount)).toString())
+                return {
+                    status: 1,
+                    message: 'Expense successfully added'
+                }
+            }
+        }
+
+    }
+    else{
+        return {
+            status: -1,
+            message: 'Expense failed to add!'
+        }
+    }
+
 }

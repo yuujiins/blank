@@ -51,10 +51,7 @@ const Header = (props) => {
 
                     </Nav>
                     <Nav>
-                        {(buttonView === true && window.sessionStorage.getItem('token') !== null) && <Button type="button" variant="warning" className="formButtonAdj formGroup" onClick={props.toggleTableView}>
-                            {tableView === 'expenses' ? 'View Transactions' : 'View Expenses'}
-                        </Button>}
-                        {isLogged === false ? (<Button type="button" className="formGroup" variant="info">Register</Button> ):(<Button type="button" onClick={handleLogout} className="formGroup" variant="danger">Logout</Button>)}
+                        {isLogged === false ? (<Button type="button" className="formGroup" onClick={ () => {navigate('/register', {replace: false})}} variant="info">Register</Button> ):(<Button type="button" onClick={handleLogout} className="formGroup" variant="danger">Logout</Button>)}
                     </Nav>
                 </Navbar.Collapse>
             </Container>

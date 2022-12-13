@@ -8,23 +8,23 @@ const ExpensesTable = (props) => {
         <Card>
             <Card.Header>
                 <h5 className="float-start">Your Expenses</h5>
-                <Button type="button" variant="info" className="btn-sm float-end"><FontAwesomeIcon icon={faPlus}/> Add</Button>
+                <Button type="button" variant="info" onClick={props.onAddExpenseClick} className="btn-sm float-end"><FontAwesomeIcon icon={faPlus}/> Add</Button>
             </Card.Header>
             <Card.Body>
-                <Form onSubmit={props.onSearch}>
+                <Form id="expensesSearch" onReset={props.onReset} onSubmit={props.onSearch}>
                     <Form.Group className="formGroup">
                         <Row>
                             <Col md={1} className="text-start">
-                                <Form.Label htmlFor="dtDateFrom">From</Form.Label>
+                                <Form.Label htmlFor="edtDateFrom">From</Form.Label>
                             </Col>
                             <Col className="text-start">
-                                <Form.Control type="date" id="dtDateFrom" name="dtDateFrom" required/>
+                                <Form.Control type="date" id="edtDateFrom" name="edtDateFrom" required/>
                             </Col>
                             <Col md={1} className="text-start">
-                                <Form.Label htmlFor="dtDateTo">To</Form.Label>
+                                <Form.Label htmlFor="edtDateTo">To</Form.Label>
                             </Col>
                             <Col className="text-start">
-                                <Form.Control type="date" id="dtDateTo" name="dtDateTo" required/>
+                                <Form.Control type="date" id="edtDateTo" name="edtDateTo" required/>
                             </Col>
                             <Col>
                                 <Button type="submit" variant="primary" className="formButtonAdj">Search</Button>

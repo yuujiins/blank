@@ -12,6 +12,7 @@ import Profile from "./pages/profile";
 import {register, login, checkOTP, verifyOTP} from "./services/account";
 import VerifyOtpModal from "./components/verify-otp-modal";
 import {toast} from "react-toastify";
+import Landing from "./pages/landing";
 
 function App() {
     const [isLogged, setLogged] = useState(false)
@@ -191,6 +192,10 @@ function App() {
         if(document.title === 'Blank - Profile'){
             setButtonView(false)
         }
+        if(document.title === 'Blank'){
+            console.log('landing')
+            setButtonView(false)
+        }
     })
   return (
     <div className="App" style={{fontFamily: "Gotham"}}>
@@ -199,10 +204,10 @@ function App() {
           <Header isLogged={isLogged} buttonView={buttonView} toggleTableView={toggleTableView} tableView={tableView}/>
           <Footer/>
         <Routes>
-            <Route path="/" element={<Dashboard tableView={tableView}/>}/>
+            <Route path="/" element={<Landing/>}/>
             <Route path="/login" element={<Login handleLogin={handleLogin} />}/>
             <Route path="/register" element={<Register handleRegister={handleRegister}/>}/>
-            <Route path="/dashboard" element={<Dashboard tableView={tableView}/>} />
+            <Route path="/dashboard" element={<Dashboard tableView={tableView} toggleTableView={toggleTableView}/>}/>
             <Route path="/profile" element={<Profile/>}/>
         </Routes>
       </BrowserRouter>

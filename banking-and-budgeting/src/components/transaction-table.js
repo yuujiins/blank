@@ -13,7 +13,7 @@ const TransactionTable = (props) => {
                 <h5>Your Transactions</h5>
             </Card.Header>
             <Card.Body>
-                <Form onSubmit={props.onSearch}>
+                <Form id="trSearchForm" onSubmit={props.onSearch} onReset={props.onReset}>
                     <Form.Group className="formGroup">
                         <Row>
                             <Col md={1} className="text-start">
@@ -30,7 +30,7 @@ const TransactionTable = (props) => {
                             </Col>
                             <Col>
                                 <Button type="submit" variant="primary" className="formButtonAdj">Search</Button>
-                                <Button type="reset" variant="warning">Reset</Button>
+                                <Button type="reset"  variant="warning">Reset</Button>
                             </Col>
                         </Row>
                     </Form.Group>

@@ -7,9 +7,18 @@ import TransactionTable from "../components/transaction-table";
 import DwModal from "../components/dw-modal";
 import ExpensesTable from "../components/expenses-table";
 import {useNavigate} from "react-router-dom";
-import {deposit, getTransactions, send} from "../services/account";
+import {
+    addExpense,
+    deposit, getAccountInfo,
+    getExpenses,
+    getExpensesFiltered,
+    getTransactions,
+    getTransactionsFiltered,
+    send
+} from "../services/account";
 import {toast} from "react-toastify";
 import {parse} from "@fortawesome/fontawesome-svg-core";
+import AddExpenseModal from "../components/add-expense-modal";
 const Dashboard = (props) => {
     const navigate = useNavigate();
     const [dtData, setDtData] = useState([]);
@@ -17,6 +26,8 @@ const Dashboard = (props) => {
     const [modalShow, setModalShow] = useState(false);
     const [modalMode, setModalMode] = useState("");
     const [tableView, setTableView] = useState(props.tableView)
+    const [expenseModalShow, setExpenseModalShow] = useState(false)
+    const [currentBalance, setCurrentBalance] = useState(window.sessionStorage.getItem('funds'))
     const tColumns = [
         {
             name: 'Date',
@@ -32,6 +43,11 @@ const Dashboard = (props) => {
             name: 'Type',
             selector: row => row.type,
             sortable: true,
+        },
+        {
+            name: 'Description',
+            selector: row=>row.description,
+            sortable: false
         },
         {
             name: 'Amount',
@@ -51,6 +67,11 @@ const Dashboard = (props) => {
             sortable: true
         },
         {
+            name: 'Description',
+            selector: row => row.description,
+            sortable: false
+        },
+        {
             name: 'Expense amount',
             selector: row=>row.amount,
             sortable: true
@@ -62,6 +83,12 @@ const Dashboard = (props) => {
     const eData = []
     const handleModalClose = () => {setModalShow(false)};
     const handleModalShow = () => {setModalShow(true)};
+    const onExpenseModalShow = () => {
+        setExpenseModalShow(true)
+    }
+    const handleExpenseModalClose = () => {
+        setExpenseModalShow(false)
+    }
     const onDepositClick = () => {
         setModalMode("deposit")
         setModalShow(true)
@@ -75,17 +102,82 @@ const Dashboard = (props) => {
         setModalShow(true)
     }
 
-    const handleTransactionSearch = (e) =>{
+    const handleTransactionSearch = async (e) =>{
         e.preventDefault()
         const data = {
             dateFrom: document.querySelector('#dtDateFrom').value,
             dateTo: document.querySelector('#dtDateTo').value
         }
+        getTransactionsFiltered(data)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach((d) => {
+                    d.date = new Date(d.date).toLocaleDateString()
+                })
+                setDtData(data)
+            });
+
+    }
+
+    const getAllTransactions = () => {
+        getTransactions()
+            .then(response => response.json())
+            .then(data => {
+                data.forEach((d) => {
+                    d.date = new Date(d.date).toLocaleDateString()
+                })
+                setDtData(data)
+            })
+    }
+
+    const getAllExpenses = () => {
+        getExpenses()
+            .then(response => response.json())
+            .then(data => {
+                data.forEach((d) => {
+                    d.date = new Date(d.date).toLocaleDateString()
+                })
+                setEdtData(data)
+            })
+    }
+
+    const getCurrentBalance = () => {
+        getAccountInfo()
+            .then(response => response.json())
+            .then(data => {
+                setCurrentBalance(data.funds)
+                window.sessionStorage.setItem('funds', data.funds.toString())
+            })
+    }
+
+    const handleReloadBalance = () => {
+        getCurrentBalance()
+    }
+
+    const resetTransactionSearch = (e) => {
+        document.querySelector('#trSearchForm').reset()
+        getAllTransactions()
+    }
+
+    const resetExpensesSearch = (e) => {
+        document.querySelector('#expensesSearch').reset()
+        getAllExpenses()
     }
 
     const handleExpensesSearch = (e) => {
         e.preventDefault();
-        setEdtData(eData);
+        const data = {
+            dateFrom:  document.querySelector('#edtDateFrom').value,
+            dateTo: document.querySelector('#edtDateTo').value
+        }
+        getExpensesFiltered(data)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach((d) => {
+                    d.date = new Date(d.date).toLocaleDateString()
+                })
+                setEdtData(data)
+            })
     }
 
     const onSubmitDwForm = async (e) => {
@@ -140,6 +232,8 @@ const Dashboard = (props) => {
             }
             setModalShow(false)
         }
+        getCurrentBalance()
+        getAllTransactions()
     }
     const onSubmitSendForm = async (e) => {
         e.preventDefault();
@@ -190,8 +284,59 @@ const Dashboard = (props) => {
                 })
             }
         }
+        getCurrentBalance()
+        getAllTransactions()
+    }
+    const onSubmitAddExpenseForm = async (e) => {
+        e.preventDefault()
+
+        const data = {
+            userId: window.sessionStorage.getItem('userId'),
+            type: document.querySelector('#expenseType').value,
+            description: document.querySelector('#expenseDescription').value,
+            date: document.querySelector('#expenseDate').value,
+            amount: document.querySelector('#expenseAmount').value
+        }
+        const expenseResult = await addExpense(data)
+        console.log(expenseResult)
+        if(expenseResult.status === 1){
+            toast.success(expenseResult.message, {
+                position: 'top-center',
+                autoClose: '3000',
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: false,
+                progress: undefined,
+                theme: 'light'
+            })
+            //get all expenses and transactions
+            getAllTransactions()
+            getAllExpenses()
+            getCurrentBalance()
+            setExpenseModalShow(false)
+        }
+        else{
+            toast.error(expenseResult.message, {
+                position: 'top-center',
+                autoClose: '3000',
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: false,
+                progress: undefined,
+                theme: 'light'
+            })
+        }
+        getAllExpenses()
     }
     useEffect(() => {
+        getAllTransactions()
+        getAllExpenses()
+        getCurrentBalance()
+    }, [])
+
+    useEffect( () => {
         document.title = "Blank - Dashboard"
         if(window.sessionStorage.getItem('token') === null){
             navigate('/login', {
@@ -204,14 +349,10 @@ const Dashboard = (props) => {
         else{
             setTableView('transactions')
         }
-        getTransactions()
-            .then(result => result.json())
-            .then(data => {
-                setDtData(data)
-            })
-    }, [])
+    })
     return (
       <Row style={{padding: "50px", margin: 0}}>
+          <AddExpenseModal show={expenseModalShow} handleClose={handleExpenseModalClose} addExpenseSubmit={onSubmitAddExpenseForm}/>
           <DwModal show={modalShow} handleClose={handleModalClose} mode={modalMode} dwSubmit={onSubmitDwForm} sendFormSubmit={onSubmitSendForm}/>
           <h1>Your Dashboard</h1>
           <Row>
@@ -224,13 +365,13 @@ const Dashboard = (props) => {
                           <VirtualCard/>
                       </Col>
                       <Col>
-                          <FundInfo onDepositClick={onDepositClick} onWithdrawClick={onWithdrawClick} onSendClick={onSendClick}/>
+                          <FundInfo tableView={props.tableView} toggleTableView={props.toggleTableView} reloadBalance={handleReloadBalance} currentBalance={currentBalance} onDepositClick={onDepositClick} onWithdrawClick={onWithdrawClick} onSendClick={onSendClick}/>
                       </Col>
                   </Row>
                   <br/>
                   <Row>
                     <Col>
-                        {tableView === 'expenses' ? <ExpensesTable onSearch={handleExpensesSearch} data={eData} columns={eColumns}/> : <TransactionTable onSearch={handleTransactionSearch} data={dtData} columns={tColumns}/>}
+                        {tableView === 'expenses' ? <ExpensesTable onReset={resetExpensesSearch} onAddExpenseClick={onExpenseModalShow} onSearch={handleExpensesSearch} data={edtDAta} columns={eColumns}/> : <TransactionTable  onReset={resetTransactionSearch} onSearch={handleTransactionSearch} data={dtData} columns={tColumns}/>}
                     </Col>
                   </Row>
               </Col>

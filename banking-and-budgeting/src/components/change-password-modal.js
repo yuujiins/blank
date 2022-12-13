@@ -11,7 +11,7 @@ const ChangePasswordModal = (props) => {
                 <Modal.Title>Change Password</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Form id="changePasswordForm">
+                <Form id="changePasswordForm" onSubmit={props.onSubmitCP}>
                     <Row>
                         <Col>
                             <Form.Group className="formGroup">

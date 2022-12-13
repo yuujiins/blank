@@ -25,13 +25,6 @@ const VerifyOtpModal = (props) => {
                     </Row>
                     <Row>
                         <Col>
-                            <Form.Group className="formGroup">
-                                <Button type="button" variant="link" onClick={props.resendOTP}>Resend OTP</Button>
-                            </Form.Group>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
                             <Button type="submit" variant="primary" className="formButtonAdj">Save Changes</Button>
                             <Button type="reset" variant="warning" className="formButtonAdj">Reset</Button>
                         </Col>

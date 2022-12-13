@@ -1,16 +1,23 @@
-import {Card} from "react-bootstrap";
+import {Button, Card, Col, Row} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faMoneyBills, faMoneyBillTransfer, faPlus} from "@fortawesome/free-solid-svg-icons";
+import {faMoneyBills, faMoneyBillTransfer, faPlus, faRotate} from "@fortawesome/free-solid-svg-icons";
+import {useEffect, useState} from "react";
 
 const FundInfo = (props) => {
+    const [tableView, setTableView] = useState(props.tableView)
+
+    useEffect(() => {
+        setTableView(props.tableView)
+    })
     return (
         <Card>
             <Card.Body>
                 <Card>
                     <Card.Body>
                         <div className="text-center">
-                            <h3>{parseFloat(window.sessionStorage.getItem('funds'))}</h3>
-                            <small>Available Balance</small>
+                            <h3>{parseFloat(props.currentBalance)}</h3>
+                            <small>Available Balance</small><br/>
+                            <Button type="button" variant="link" onClick={props.reloadBalance}><FontAwesomeIcon icon={faRotate}/> Refresh</Button>
                         </div>
                     </Card.Body>
                 </Card>
@@ -29,6 +36,15 @@ const FundInfo = (props) => {
                     </div>
                 </div>
             </Card.Body>
+            <Card.Footer>
+                <Row>
+                    <Col>
+                        <Button type="button" onClick={props.toggleTableView}>
+                            {tableView === 'transactions' ? 'View Expenses' : 'View Transactions'}
+                        </Button>
+                    </Col>
+                </Row>
+            </Card.Footer>
         </Card>
     );
 }
